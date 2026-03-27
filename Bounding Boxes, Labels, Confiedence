@@ -1,0 +1,38 @@
+import cv2
+from ultralytics import YOLO
+
+# This is the path to loading the model we want
+model = YOLO('yolov8n.pt') 
+
+# This activates the camera using the OpenCV cv2 module. 
+cap = cv2.VideoCapture(0)  
+
+if not cap.isOpened():
+    print("Error: The camera is not opening.")
+    exit()
+
+print("Press 'q' on the keyboard to stop.")
+
+# This reads each frame from the camera and is a major part of the temporal processing part. 
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        print("Error: was unable to collect a frame from the camera.")
+        break
+
+# Predicts objects
+    results = model(frame)
+
+# This is what adds the bounding boxes along with the confidence numbers and lables. 
+    annotated_frame = results[0].plot()  
+
+# This shows the frame
+    cv2.imshow("YOLOv8 Real-Time Object Detection", annotated_frame)
+
+# This stops it when the keyboard key 'q' is clicked. 
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+# This releases the resources. 
+cap.release()
+cv2.destroyAllWindows()
